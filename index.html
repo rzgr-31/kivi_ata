@@ -1,0 +1,1326 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KiviM'e</title>
+    <meta name="description" content="Bir zamanlar, her şeyin başladığı o gün.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Montserrat:wght@200;400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #030005;
+            /* Celestial Dark */
+            --accent-color: #d4af37;
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden !important;
+            position: fixed;
+            touch-action: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('eye_catching_romantic_celestial_background_1776633687779.png');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.6;
+            z-index: -1;
+            filter: brightness(70%) contrast(110%);
+        }
+
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, #000 90%);
+            z-index: -1;
+        }
+
+        .pages-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1s ease, transform 1s ease, visibility 1s;
+            transform: scale(1.05);
+            z-index: 1;
+        }
+
+        .page.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+            z-index: 2;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 90%;
+            height: 90vh;
+            height: 90dvh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            align-items: center;
+            text-align: center;
+            z-index: 1;
+            padding: 1rem;
+        }
+
+        .date-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 900;
+            letter-spacing: 5px;
+            background: linear-gradient(to right,
+                    #ff0000 0%,
+                    #ff7f00 16%,
+                    #ffff00 32%,
+                    #00ff00 48%,
+                    #0000ff 64%,
+                    #4b0082 80%,
+                    #ff0000 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 5px 15px rgba(255, 255, 255, 0.2)) drop-shadow(0 15px 30px rgba(0, 0, 0, 0.6));
+        }
+
+        .divider {
+            height: 1px;
+            width: 40px;
+            background: var(--accent-color);
+            margin: 1rem auto;
+            opacity: 0.5;
+        }
+
+        .subtitle {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: var(--text-secondary);
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+        }
+
+        .counter-grid {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .time-box {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px) saturate(160%);
+            -webkit-backdrop-filter: blur(12px) saturate(160%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem 1.5rem;
+            min-width: 120px;
+            border-radius: 40px 10px 40px 10px;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+            cursor: default;
+        }
+
+        .time-box:focus,
+        .time-box:active,
+        .time-box:focus-visible {
+            outline: none !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .time-box::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+            pointer-events: none;
+        }
+
+        @media (hover: hover) {
+            .time-box:hover {
+                transform: translateY(-5px) scale(1.05);
+                background: rgba(255, 255, 255, 0.06);
+                border-color: var(--accent-color);
+            }
+        }
+
+        .time-value {
+            display: block;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            font-weight: 200;
+            color: #fff;
+        }
+
+        .time-label {
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            color: var(--accent-color);
+            text-transform: uppercase;
+        }
+
+        .quote {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(0.7rem, 3.5vw, 1.4rem);
+            line-height: 1.4;
+            color: var(--text-primary);
+            white-space: nowrap;
+        }
+
+        .context {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(2, auto);
+            justify-content: center;
+            gap: 0.5rem 2rem;
+            width: 100%;
+        }
+
+        .last-photo {
+            grid-column: 1 / span 2;
+            justify-self: center;
+        }
+
+        .polaroid {
+            background: #fff;
+            padding: 6px 6px 20px 6px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            transition: transform 0.4s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .polaroid:hover {
+            transform: scale(1.15) rotate(0deg) !important;
+            z-index: 10;
+        }
+
+        .photo-frame {
+            width: 120px;
+            height: 160px;
+            overflow: hidden;
+            background: #111;
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-date {
+            font-family: 'Playfair Display', serif;
+            color: #333;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .tilt-left {
+            transform: rotate(-5deg);
+        }
+
+        .tilt-right {
+            transform: rotate(4deg);
+        }
+
+        .tilt-left-small {
+            transform: rotate(-3deg);
+        }
+
+        .hearts-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 0.8rem;
+            color: #ff0000;
+            filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+            animation: heartPulse 2s infinite ease-in-out;
+        }
+
+        @keyframes heartPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.9;
+            }
+
+            50% {
+                transform: scale(1.3);
+                opacity: 1;
+            }
+        }
+
+        .h1 {
+            top: 5px;
+            left: 10px;
+        }
+
+        .h2 {
+            top: 20px;
+            right: 8px;
+            transform: rotate(15deg);
+        }
+
+        .h3 {
+            bottom: 40px;
+            left: 5px;
+            transform: rotate(-10deg);
+        }
+
+        .h4 {
+            bottom: 35px;
+            right: 10px;
+            transform: rotate(5deg);
+        }
+
+        .h5 {
+            top: 40%;
+            left: -5px;
+            transform: rotate(-20deg);
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
+        }
+
+        .letter-card {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            padding: clamp(1rem, 4vh, 2rem);
+            border-radius: 12px;
+            max-width: 600px;
+            width: 95%;
+            text-align: left;
+            line-height: 1.5;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .letter-pre {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(0.8rem, 2vh, 1.1rem);
+            color: var(--accent-color);
+            margin-bottom: 0.3rem;
+            text-align: center;
+        }
+
+        .letter-body p {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(0.75rem, 1.8vh, 0.9rem);
+            color: #eee;
+            margin-bottom: 0.5rem;
+            text-align: justify;
+        }
+
+        .final-love {
+            font-weight: 700;
+            color: #fff;
+            font-size: clamp(0.9rem, 2vh, 1.1rem) !important;
+            margin-top: 0.5rem !important;
+            text-align: center !important;
+        }
+
+        .farewell {
+            font-style: italic;
+            font-size: clamp(0.65rem, 1.5vh, 0.8rem) !important;
+            color: var(--text-secondary) !important;
+            text-align: center !important;
+            margin-top: 0.5rem !important;
+        }
+
+        .kehkpik {
+            color: #ff0000;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+        }
+
+        .kehkpik::after {
+            content: '❤';
+            position: absolute;
+            top: -10px;
+            right: -8px;
+            font-size: 0.6rem;
+            animation: heartPulse 1.5s infinite;
+        }
+
+        .kehkpik::before {
+            content: '❤';
+            position: absolute;
+            bottom: -5px;
+            left: -8px;
+            font-size: 0.4rem;
+            opacity: 0.7;
+            animation: heartPulse 2s infinite reverse;
+        }
+
+        .nav-arrows {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px) saturate(180%);
+            -webkit-backdrop-filter: blur(15px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px 50px 20px 50px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: auto;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-arrow:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-50%);
+        }
+
+        .nav-arrow:active {
+            transform: translateY(-50%) scale(0.95);
+            transition: 0.1s;
+        }
+
+        .nav-arrow.flash {
+            background: rgba(200, 100, 0, 0.35) !important;
+            border-color: rgba(212, 175, 55, 0.7) !important;
+            box-shadow: 0 0 20px rgba(200, 100, 0, 0.3) !important;
+            transform: translateY(-50%) scale(0.9) !important;
+            transition: none !important;
+        }
+
+        .nav-arrow svg {
+            width: 35px;
+            height: 35px;
+            fill: #fff;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+
+        .nav-arrow:hover svg {
+            fill: var(--accent-color);
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .nav-arrow.left {
+            left: 30px;
+        }
+
+        .nav-arrow.right {
+            right: 30px;
+        }
+
+        .nav-arrow.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .global-footer {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .copyright {
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            color: #8c8c8c;
+            position: relative;
+            display: inline-block;
+            cursor: default;
+        }
+
+        .copyright::after {
+            content: 'MİRCAN / ATA';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            color: transparent;
+            text-shadow: 0 0 8px rgba(200, 200, 200, 0.6);
+            filter: blur(2px);
+            opacity: 0;
+            animation: ghostFloat 4s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes ghostFloat {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 0;
+                filter: blur(2px);
+            }
+
+            50% {
+                opacity: 0.4;
+                filter: blur(4px);
+            }
+
+            100% {
+                transform: translateY(-12px) scale(1.15);
+                opacity: 0;
+                filter: blur(8px);
+            }
+        }
+
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .floating-heart {
+            position: absolute;
+            bottom: -50px;
+            color: rgba(255, 0, 0, 0.4);
+            font-size: 1.5rem;
+            user-select: none;
+            animation: floatUp 15s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.4;
+            }
+
+            90% {
+                opacity: 0.4;
+            }
+
+            100% {
+                transform: translateY(-110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 1.2s ease forwards;
+        }
+
+        .fade-in-delayed {
+            opacity: 0;
+            animation: fadeIn 1.2s ease forwards 0.5s;
+        }
+
+        .fade-in-delayed-more {
+            opacity: 0;
+            animation: fadeIn 1.2s ease forwards 1s;
+        }
+
+        .special-m {
+            color: #ff3333;
+            position: relative;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .special-m::after {
+            content: '❤️';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            animation: heartFloat 2s infinite ease-in-out;
+        }
+
+        @keyframes heartFloat {
+
+            0%,
+            100% {
+                transform: translate(-50%, 0) scale(1);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: translate(-50%, -3px) scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                height: 95vh;
+                height: 95dvh;
+                padding: 0.5rem;
+            }
+
+            .date-title {
+                font-size: 2rem;
+            }
+
+            .time-box {
+                padding: 0.6rem;
+                min-width: 65px;
+                flex: 1 1 40%;
+            }
+
+            .time-value {
+                font-size: 1.3rem;
+            }
+
+            .photo-grid {
+                gap: 0.5rem 1rem;
+            }
+
+            .photo-frame {
+                width: 100px;
+                height: 130px;
+            }
+
+            .context {
+                font-size: 0.6rem;
+                white-space: nowrap;
+            }
+
+            .nav-arrow {
+                width: 45px;
+                height: 45px;
+            }
+
+            .nav-arrow.left {
+                left: 10px;
+            }
+
+            .nav-arrow.right {
+                right: 10px;
+            }
+        }
+
+        .countdown-title {
+            font-family: 'Cinzel', serif;
+            color: #fff;
+            font-size: 0.5rem;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+            text-transform: uppercase;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+        }
+
+        .countdown-display {
+            font-family: 'Cinzel', serif;
+            color: var(--accent-color);
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #countdownContainer {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1500;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 75px;
+            height: 300px;
+            border-radius: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(212, 175, 55, 0.05);
+            animation: liquidFloat 6s infinite ease-in-out;
+            font-variant-numeric: tabular-nums;
+            overflow: hidden;
+        }
+
+        .sep {
+            font-size: 0.7rem;
+            opacity: 0.3;
+            margin: -5px 0;
+        }
+
+        @keyframes liquidFloat {
+
+            0%,
+            100% {
+                transform: translateY(-50%) translateX(0);
+            }
+
+            50% {
+                transform: translateY(-51%) translateX(0);
+            }
+        }
+
+        #countdownContainer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+            border-radius: inherit;
+            pointer-events: none;
+        }
+
+        @media (max-width: 900px) {
+            #countdownContainer {
+                left: 10px;
+                width: 65px;
+                height: 260px;
+                padding: 10px 0;
+            }
+
+            .countdown-display {
+                font-size: 1.1rem;
+            }
+        }
+
+        .intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1.5s ease, visibility 1.5s;
+            overflow: hidden;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .corner-decor {
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.05);
+            border-radius: 40px;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .corner-decor::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+            border-radius: inherit;
+        }
+
+        .corner-decor.tl {
+            top: -125px;
+            left: -125px;
+            transform: rotate(45deg);
+        }
+
+        .corner-decor.tr {
+            top: -125px;
+            right: -125px;
+            transform: rotate(-45deg);
+        }
+
+        .corner-decor.bl {
+            bottom: -125px;
+            left: -125px;
+            transform: rotate(-45deg);
+        }
+
+        .corner-decor.br {
+            bottom: -125px;
+            right: -125px;
+            transform: rotate(45deg);
+        }
+
+        @media (max-width: 600px) {
+            .corner-decor {
+                width: 160px;
+                height: 160px;
+                border-radius: 25px;
+            }
+
+            .corner-decor.tl {
+                top: -80px;
+                left: -80px;
+            }
+
+            .corner-decor.tr {
+                top: -80px;
+                right: -80px;
+            }
+
+            .corner-decor.bl {
+                bottom: -80px;
+                left: -80px;
+            }
+
+            .corner-decor.br {
+                bottom: -80px;
+                right: -80px;
+            }
+        }
+
+        .intro-timer {
+            font-family: 'Cinzel', serif;
+            color: #fff;
+            font-size: clamp(1rem, 4vw, 1.8rem);
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+            line-height: 1.6;
+        }
+
+        .intro-timer span:not([id^="bypass"]) {
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+
+        .intro-timer span[id^="bypass"] {
+            color: #fff;
+        }
+
+        .enter-btn {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px) saturate(180%);
+            -webkit-backdrop-filter: blur(15px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 18px 60px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            letter-spacing: 8px;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .enter-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: 0.6s;
+        }
+
+        .enter-btn:hover {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            box-shadow: 0 8px 32px rgba(212, 175, 55, 0.3);
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        .enter-btn:hover::before {
+            left: 100%;
+        }
+
+        .intro-hint {
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+        }
+
+        .intro-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .modal-content {
+            background: rgba(15, 15, 15, 0.95);
+            border: 1px solid var(--accent-color);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 1), 0 0 20px rgba(212, 175, 55, 0.1);
+            transform: scale(0.9);
+            animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes modalPop {
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .modal-message {
+            font-family: 'Cinzel', serif;
+            color: #fff;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            letter-spacing: 1px;
+        }
+
+        .modal-btn {
+            background: none;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 10px 40px;
+            font-family: 'Cinzel', serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 2px;
+        }
+
+        .modal-btn:hover {
+            background: var(--accent-color);
+            color: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="intro-overlay" id="introOverlay">
+        <div class="corner-decor tl"></div>
+        <div class="corner-decor tr"></div>
+        <div class="corner-decor bl"></div>
+        <div class="corner-decor br"></div>
+        <div id="countdownContainer">
+            <p class="countdown-title">6. Yıla Son :</p>
+            <div class="countdown-display" id="finalCountdown">00 : 00 : 00</div>
+        </div>
+        <div class="intro-timer" id="introTimer">
+            <div>
+                <span id="introYears">00</span> <span id="bypassYil" style="cursor: default;">YIL</span>
+                <span id="introMonths">00</span> AY
+                <span id="introDays">00</span> <span id="bypassGun" style="cursor: default;">GÜN</span>
+            </div>
+            <div>
+                <span id="introHours">00</span> <span id="bypassSaat" style="cursor: default;">SAAT</span>
+                <span id="introMinutes">00</span> DAKİKA
+            </div>
+        </div>
+        <button class="enter-btn" id="enterBtn">BAŞLA</button>
+        <p class="intro-hint">Müzik Açılacaktır.</p>
+    </div>
+
+    <div id="customModal" class="modal-overlay">
+        <div class="modal-content">
+            <p id="modalMessage" class="modal-message"></p>
+            <button id="closeModal" class="modal-btn">TAMAM</button>
+        </div>
+    </div>
+
+    <div class="background-overlay"></div>
+    <div class="floating-hearts" id="floatingHearts"></div>
+    <div class="nav-arrows">
+        <button id="prevPage" class="nav-arrow left hidden"><svg viewBox="0 0 24 24">
+                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+            </svg></button>
+        <button id="nextPage" class="nav-arrow right"><svg viewBox="0 0 24 24">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+            </svg></button>
+    </div>
+
+    <main class="pages-container">
+        <section class="page active" id="page1">
+            <div class="container">
+                <header class="fade-in">
+                    <h1 class="date-title">22.04.2020</h1>
+                    <div class="divider"></div>
+                    <p class="subtitle">Gerçekten Her Halini Sevdiğim İlk Aşkım KİVİ<span>M</span> ile Hikayemizin
+                        Başladığı Tarih...</p>
+                </header>
+                <div class="counter-grid fade-in-delayed">
+                    <div class="time-box"><span id="years" class="time-value">00</span><span
+                            class="time-label">YIL</span></div>
+                    <div class="time-box"><span id="months" class="time-value">00</span><span
+                            class="time-label">AY</span></div>
+                    <div class="time-box"><span id="days" class="time-value">00</span><span
+                            class="time-label">GÜN</span></div>
+                    <div class="time-box"><span id="hours" class="time-value">00</span><span
+                            class="time-label">SAAT</span></div>
+                </div>
+                <div class="message-section fade-in-delayed-more">
+                    <p class="quote">"Bazı hikayeler biter, ama tarihler asla silinmez."</p>
+                    <p class="context">Bu sayfa, 22 Nisan 2020'de başlayan o özel bağın anısına,<br>çocukluk aşkım
+                        KİVİ<span class="special-m">M</span>'in anısına.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="page" id="page2">
+            <div class="container">
+                <h2 class="section-title fade-in">Birkaç Anımız...</h2>
+                <div class="photo-grid">
+                    <div class="polaroid tilt-left fade-in-delayed">
+                        <div class="hearts-container"><span class="heart h1">❤️</span><span
+                                class="heart h2">❤</span><span class="heart h3">❤️</span><span
+                                class="heart h4">❤</span><span class="heart h5">❤️</span></div>
+                        <div class="photo-frame"><img src="https://i.hizliresim.com/74j2fpr.jpeg"></div>
+                        <p class="photo-date">29 Mart 2024 16.41</p>
+                    </div>
+                    <div class="polaroid tilt-right fade-in-delayed">
+                        <div class="hearts-container"><span class="heart h1">❤️</span><span
+                                class="heart h2">❤</span><span class="heart h3">❤️</span><span class="heart h4">❤</span>
+                        </div>
+                        <div class="photo-frame"><img src="https://i.hizliresim.com/rfbezkc.jpeg"></div>
+                        <p class="photo-date">29 Mart 2024 16.51</p>
+                    </div>
+                    <div class="polaroid tilt-right fade-in-delayed-more">
+                        <div class="hearts-container"><span class="heart h1">❤️</span><span
+                                class="heart h2">❤</span><span class="heart h3">❤️</span></div>
+                        <div class="photo-frame"><img src="https://i.hizliresim.com/rnr8uwv.jpeg"></div>
+                        <p class="photo-date">5 Nisan 2024 12.59</p>
+                    </div>
+                    <div class="polaroid tilt-left fade-in-delayed-more">
+                        <div class="hearts-container"><span class="heart h1">❤️</span><span class="heart h2">❤</span>
+                        </div>
+                        <div class="photo-frame"><img src="https://i.hizliresim.com/mx0qp2e.jpeg"></div>
+                        <p class="photo-date">5 Nisan 2024 14.49</p>
+                    </div>
+                    <div class="polaroid tilt-right-small fade-in-delayed-more last-photo">
+                        <div class="hearts-container"><span class="heart h1">❤️</span></div>
+                        <div class="photo-frame"><img src="https://i.hizliresim.com/fjuolcl.jpeg"></div>
+                        <p class="photo-date">10 Aralık 2025 10.13</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="page" id="page3">
+            <div class="container letter-layout">
+                <div class="letter-card glass-panel fade-in">
+                    <p class="letter-pre">6. Yıl Önce Bu Gün Hayatıma Giren Sana, KİVİ<span
+                            class="special-m">M</span>'e;</p>
+                    <div class="divider"></div>
+                    <div class="letter-body">
+                        <p>İlk ve Tek, Çocukluk Aşkım KİVİ<span class="special-m">M</span>, Seni Ne Kadar Sevdiğimi
+                            Belki Kelimelere Sığdırmak Mümkün Değildir Ama Bil Ki Ne Kadar Da Ters Düşüncelerimiz -
+                            Fikirlerimiz ve Kavgalarımız Olsa Da, Ne Kadar Ayrı Olsak Ta, Ne Kadar Numaramı Sil Desem De
+                            :) Bil Ki İçimde Hiç Sönmeyecek Kor Bi Alevdir Senin Aşkın...</p>
+                        <p>Tarih Ne Olursa Olsun Tek Sevdiğim Sen Olacaksın, Ne Seni Unutacağım Ne De Beni Adam Etmek
+                            İçin Verdiğin Emekleri, Ayrılık Kapımızı Çalmış Olabilir Ama Her Zaman Kalbimde 22.04.2020
+                            Tarihindeki Küçük <span class="kehkpik">Kehkpik</span> Olarak Kalacaksın...</p>
+                        <p class="final-love">Seni Çok Seviyorum.</p>
+                        <p class="farewell">Yeni Hayatında Mutluluklar Diliyor Ve Seni Kalbimin En Derinine
+                            Gömüyorum,<br><span
+                                style="color: #ff0000; font-weight: 900; font-size: clamp(0.7rem, 2.8vw, 1.1rem); white-space: nowrap; display: inline-block; margin-top: 8px;">Öküz
+                                Seni Asla Unutmayacak KİVİ<span class="special-m">M</span></span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="page" id="page4">
+            <div class="container letter-layout">
+                <div class="letter-card glass-panel fade-in">
+                    <p class="letter-pre">Biricik Eski Sevgilim;</p>
+                    <div class="divider"></div>
+                    <div class="letter-body">
+                        <p>İster Güneş Ol Yak Beni,</p>
+                        <p>Yağmurum Ol Ağlat Beni.</p>
+                        <p>Bu Kalp Seni Unutamaz, Unutmayacak...</p>
+                        <p>Sana Söz Veriyorum, Ömrümün Son Saniyesine Kadar Senden Başka Sevmeyeceğim.</p>
+                        <p>Bu Boş Hayatımın Tek Anlamı Oldun Ve Öyle Kalacaksın,</p>
+                        <p>Son Defa Sana Seni Seviyorum Demek İstiyorum,</p>
+                        <p>Yeni Hayatında Mutlu Ol İsterim, Seni Üzecek Birini Sevme, Kendine İyi Bak...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="global-footer">
+        <p class="copyright">MİRCAN / ATA</p>
+    </footer>
+    <audio id="bgMusic" loop>
+        <source src="https://mp3tourl.com/audio/1776784716213-025dcd01-a577-4c25-bfc1-7ef8e37833d3.mp3"
+            type="audio/mpeg">
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const startDate = new Date('2020-04-22T00:00:00');
+            const bgMusic = document.getElementById('bgMusic');
+            const enterBtn = document.getElementById('enterBtn');
+            const introOverlay = document.getElementById('introOverlay');
+            const customModal = document.getElementById('customModal');
+            const modalMessage = document.getElementById('modalMessage');
+            const closeModal = document.getElementById('closeModal');
+            const bypassYil = document.getElementById('bypassYil');
+            const bypassSaat = document.getElementById('bypassSaat');
+            const bypassGun = document.getElementById('bypassGun');
+
+            let yilClicked = false, saatClicked = false, isSimulated2026 = false, confettiFired = false;
+
+            bypassYil.addEventListener('click', () => { yilClicked = true; });
+            bypassSaat.addEventListener('click', () => { if (yilClicked) saatClicked = true; });
+            bypassGun.addEventListener('click', () => {
+                if (!isSimulated2026) {
+                    isSimulated2026 = true; updateCounter();
+                    if (typeof confetti === 'function' && !confettiFired) {
+                        confettiFired = true;
+                        const settings = { particleCount: 120, spread: 80, startVelocity: 60, zIndex: 2500, colors: ['#ff0000', '#d4af37', '#ffffff', '#ff6600'] };
+                        confetti(Object.assign({}, settings, { origin: { x: 0, y: 0 }, angle: 315 }));
+                        confetti(Object.assign({}, settings, { origin: { x: 1, y: 0 }, angle: 225 }));
+                        confetti(Object.assign({}, settings, { origin: { x: 0, y: 1 }, angle: 45 }));
+                        confetti(Object.assign({}, settings, { origin: { x: 1, y: 1 }, angle: 135 }));
+                    }
+                }
+            });
+
+            function getNow() { return isSimulated2026 ? new Date('2026-04-22T00:00:05') : new Date(); }
+
+            enterBtn.addEventListener('click', () => {
+                const now = getNow(), unlockDate = new Date('2026-04-22T00:00:00');
+                const isAdmin = (yilClicked && saatClicked) || isSimulated2026;
+                if (now < unlockDate && !isAdmin) {
+                    const diff = unlockDate - now;
+                    const d = Math.floor(diff / (1000 * 60 * 60 * 24)), h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)), m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    modalMessage.textContent = `${d} Gün ${h} Saat ${m} Dkk Sonra Görüntüleyebilirsiniz.`;
+                    customModal.style.display = 'flex'; return;
+                }
+                bgMusic.currentTime = 75; bgMusic.volume = 0;
+                bgMusic.play().then(() => {
+                    let vol = 0; const interval = 50, duration = 1500, increment = interval / duration;
+                    const fade = setInterval(() => { vol += increment; if (vol >= 1) { bgMusic.volume = 1; clearInterval(fade); } else { bgMusic.volume = vol; } }, interval);
+                });
+                introOverlay.classList.add('hidden');
+            });
+
+            closeModal.addEventListener('click', () => { customModal.style.display = 'none'; });
+
+            function updateCounter() {
+                const now = getNow(), unlockDate = new Date('2026-04-22T00:00:00'), totalDiff = unlockDate - now;
+                const countdownContainer = document.getElementById('countdownContainer');
+                const finalCountdown = document.getElementById('finalCountdown');
+                if (totalDiff <= 0) { if (countdownContainer) countdownContainer.style.display = 'none'; }
+                else if (finalCountdown) {
+                    const hl = Math.floor(totalDiff / 3600000), ml = Math.floor((totalDiff % 3600000) / 60000), sl = Math.floor((totalDiff % 60000) / 1000);
+                    finalCountdown.innerHTML = `<span>${hl.toString().padStart(2, '0')}</span><span class="sep">●</span><span>${ml.toString().padStart(2, '0')}</span><span class="sep">●</span><span>${sl.toString().padStart(2, '0')}</span>`;
+                }
+
+                let years = now.getFullYear() - startDate.getFullYear(), months = now.getMonth() - startDate.getMonth(), days = now.getDate() - startDate.getDate(), hours = now.getHours() - startDate.getHours(), minutes = now.getMinutes() - startDate.getMinutes();
+                if (minutes < 0) { hours--; minutes += 60; } if (hours < 0) { days--; hours += 24; } if (days < 0) { months--; const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0); days += prevMonth.getDate(); } if (months < 0) { years--; months += 12; }
+
+                document.getElementById('years').textContent = years.toString().padStart(2, '0');
+                document.getElementById('months').textContent = months.toString().padStart(2, '0');
+                document.getElementById('days').textContent = days.toString().padStart(2, '0');
+                document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+                document.getElementById('introYears').textContent = years.toString().padStart(2, '0');
+                document.getElementById('introMonths').textContent = months.toString().padStart(2, '0');
+                document.getElementById('introDays').textContent = days.toString().padStart(2, '0');
+                document.getElementById('introHours').textContent = hours.toString().padStart(2, '0');
+                document.getElementById('introMinutes').textContent = minutes.toString().padStart(2, '0');
+
+                if (years === 6 && months === 0 && days >= 0 && days <= 2 && !confettiFired) {
+                    confettiFired = true;
+                    if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 }, colors: ['#d4af37', '#ffffff', '#ff0000'] });
+                }
+            }
+            updateCounter(); setInterval(updateCounter, 1000);
+
+            const pages = document.querySelectorAll('.page'), prevBtn = document.getElementById('prevPage'), nextBtn = document.getElementById('nextPage');
+            let currentPageIndex = 0;
+            function updatePages() {
+                pages.forEach((page, index) => { page.classList.toggle('active', index === currentPageIndex); });
+                prevBtn.classList.toggle('hidden', currentPageIndex === 0);
+                nextBtn.classList.toggle('hidden', currentPageIndex === pages.length - 1);
+            }
+            prevBtn.addEventListener('click', () => { if (currentPageIndex > 0) { currentPageIndex--; updatePages(); prevBtn.classList.add('flash'); setTimeout(() => prevBtn.classList.remove('flash'), 80); } });
+            nextBtn.addEventListener('click', () => { if (currentPageIndex < pages.length - 1) { currentPageIndex++; updatePages(); nextBtn.classList.add('flash'); setTimeout(() => nextBtn.classList.remove('flash'), 80); } });
+
+            const heartsContainer = document.getElementById('floatingHearts');
+            function createHeart() {
+                const heart = document.createElement('span'); heart.classList.add('floating-heart');
+                const rand = Math.random();
+                if (rand < 0.20) heart.innerHTML = '💐'; else if (rand < 0.60) heart.innerHTML = '❤️'; else heart.innerHTML = '❤';
+                heart.style.left = Math.random() * 100 + 'vw'; heart.style.animationDuration = (Math.random() * 5 + 10) + 's';
+                heart.style.opacity = Math.random() * 0.4 + 0.2; heart.style.fontSize = (Math.random() * 1 + 0.5) + 'rem';
+                heartsContainer.appendChild(heart); setTimeout(() => { heart.remove(); }, 15000);
+            }
+            setInterval(createHeart, 560);
+
+            document.addEventListener('mousemove', (e) => {
+                const x = (e.clientX / window.innerWidth - 0.5) * 20, y = (e.clientY / window.innerHeight - 0.5) * 20;
+                const overlay = document.querySelector('.background-overlay'); if (overlay) overlay.style.transform = `translate(${x}px, ${y}px)`;
+            });
+
+            const realDateCheck = getNow();
+            if (realDateCheck.getFullYear() === 2026 && realDateCheck.getMonth() === 3 && realDateCheck.getDate() === 22 && !confettiFired) {
+                confettiFired = true;
+                setTimeout(() => {
+                    if (typeof confetti === 'function') {
+                        const settings = { particleCount: 150, spread: 90, startVelocity: 65, zIndex: 2500, colors: ['#ff0000', '#d4af37', '#ffffff', '#ff6600'] };
+                        confetti(Object.assign({}, settings, { origin: { x: 0, y: 0 }, angle: 315 }));
+                        confetti(Object.assign({}, settings, { origin: { x: 1, y: 0 }, angle: 225 }));
+                        confetti(Object.assign({}, settings, { origin: { x: 0, y: 1 }, angle: 45 }));
+                        confetti(Object.assign({}, settings, { origin: { x: 1, y: 1 }, angle: 135 }));
+                    }
+                }, 300);
+            }
+        });
+    </script>
+</body>
+
+</html>
