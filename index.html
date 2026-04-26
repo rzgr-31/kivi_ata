@@ -1,0 +1,281 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Sayfa Bulunamadı</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;600;900&display=swap');
+
+        :root {
+            --bg-color: #050505;
+            --text-color: #ffffff;
+            --accent-color: #ff3e3e;
+            --secondary-color: #1a1a1a;
+            --glitch-color-1: #ff0000;
+            --glitch-color-2: #00ffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Outfit', sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 50% 50%, rgba(255, 62, 62, 0.05) 0%, transparent 70%),
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 100%, 100% 2px, 3px 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 800px;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error-code {
+            font-size: clamp(8rem, 20vw, 15rem);
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 1rem;
+            position: relative;
+            color: var(--text-color);
+            text-transform: uppercase;
+            letter-spacing: -5px;
+            text-shadow: 0 0 20px rgba(255, 62, 62, 0.3);
+        }
+
+        .error-code::before,
+        .error-code::after {
+            content: "404";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+            clip: rect(0, 0, 0, 0);
+        }
+
+        .error-code::after {
+            left: 2px;
+            text-shadow: -2px 0 var(--glitch-color-2);
+            animation: glitch-anim 2s infinite linear alternate-reverse;
+        }
+
+        .error-code::before {
+            left: -2px;
+            text-shadow: 2px 0 var(--glitch-color-1);
+            animation: glitch-anim2 3s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% {
+                clip: rect(20px, 9999px, 80px, 0);
+            }
+
+            20% {
+                clip: rect(60px, 9999px, 10px, 0);
+            }
+
+            40% {
+                clip: rect(10px, 9999px, 90px, 0);
+            }
+
+            60% {
+                clip: rect(80px, 9999px, 30px, 0);
+            }
+
+            80% {
+                clip: rect(40px, 9999px, 70px, 0);
+            }
+
+            100% {
+                clip: rect(90px, 9999px, 20px, 0);
+            }
+        }
+
+        @keyframes glitch-anim2 {
+            0% {
+                clip: rect(70px, 9999px, 20px, 0);
+            }
+
+            20% {
+                clip: rect(30px, 9999px, 80px, 0);
+            }
+
+            40% {
+                clip: rect(90px, 9999px, 10px, 0);
+            }
+
+            60% {
+                clip: rect(10px, 9999px, 60px, 0);
+            }
+
+            80% {
+                clip: rect(80px, 9999px, 40px, 0);
+            }
+
+            100% {
+                clip: rect(20px, 9999px, 90px, 0);
+            }
+        }
+
+        .not-found {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            letter-spacing: 0.5rem;
+            margin-bottom: 2.5rem;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .message {
+            font-size: 1.2rem;
+            color: #888;
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.6;
+            border-top: 1px solid var(--secondary-color);
+            padding-top: 2rem;
+            position: relative;
+        }
+
+        .message span {
+            display: block;
+            margin-top: 0.5rem;
+            color: #ccc;
+            font-weight: 600;
+        }
+
+        .scanner-line {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 62, 62, 0.2);
+            box-shadow: 0 0 10px var(--accent-color);
+            animation: scan 4s linear infinite;
+            z-index: 100;
+        }
+
+        @keyframes scan {
+            0% {
+                top: -2%;
+            }
+
+            100% {
+                top: 102%;
+            }
+        }
+
+        .status-box {
+            display: inline-block;
+            margin-top: 3rem;
+            padding: 10px 20px;
+            border: 1px solid rgba(255, 62, 62, 0.3);
+            background: rgba(255, 62, 62, 0.05);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            animation: flicker 0.5s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% {
+                opacity: 0.8;
+            }
+
+            100% {
+                opacity: 1;
+                text-shadow: 0 0 5px var(--accent-color);
+            }
+        }
+
+        .decor-line {
+            width: 1px;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, var(--accent-color), transparent);
+            position: absolute;
+            left: 10%;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.3;
+        }
+
+        .decor-line.right {
+            left: auto;
+            right: 10%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="background-overlay"></div>
+    <div class="scanner-line"></div>
+
+    <div class="decor-line"></div>
+    <div class="decor-line right"></div>
+
+    <div class="container">
+        <div class="error-code">404</div>
+        <div class="not-found">Not Found</div>
+
+        <div class="message">
+            Erişim Sağlamaya Çalıştığınız WEB Adresi<br>
+            <span>Admin Tarafından Silinmiştir.</span>
+        </div>
+
+        <div class="status-box">SYSTEM STATUS: ARCHIVED / OFFLINE</div>
+    </div>
+
+    <script>
+        // Mouse parallax effect
+        document.addEventListener('mousemove', (e) => {
+            const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
+            const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
+            document.querySelector('.container').style.transform = `translate(${moveX}px, ${moveY}px)`;
+        });
+    </script>
+</body>
+
+</html>
